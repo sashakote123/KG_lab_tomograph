@@ -99,17 +99,86 @@ namespace Tomograph
 
         }
 
+
+        public static Color CalculateNewPixelColor(Bitmap img, int x, int y)
+        {
+
+            int sizeX = 3;
+            int sizeY = 3;
+            float[,] kernel = null;
+            kernel = new float[sizeX, sizeY];
+            for (int i = 0; i < sizeX; i++)
+                for (int j = 0; j < sizeY; j++)
+                {
+                    kernel[i, j] = 1.0f / (float)(sizeX * sizeY);
+                }
+
+
+
+
+
+            int radiusX = kernel.GetLength(0) / 2;
+            int radiusY = kernel.GetLength(1) / 2;
+
+            float resultR = 0;
+            float resultG = 0;
+            float resultB = 0;
+
+            for (int l = -radiusY; l <= radiusY; l++)
+                for (int k = -radiusX; k <= radiusX; k++)
+                {
+                    int idX = Clamp(x + k, 0, textureImage.Width - 1);
+                    int idY = Clamp(y + l, 0, textureImage.Height - 1);
+                    Color nColor = textureImage.GetPixel(idX, idY);
+                    resultR += nColor.R * kernel[k + radiusX, l + radiusY];
+                    resultG += nColor.G * kernel[k + radiusX, l + radiusY];
+                    resultB += nColor.B * kernel[k + radiusX, l + radiusY];
+
+                }
+
+            return Color.FromArgb(Clamp((int)resultR, 0, 255), Clamp((int)resultG, 0, 255), Clamp((int)resultB, 0, 255));
+
+        }
+
         public static void generateTextureImage(int layerNumber, int min, int width)
         {
             textureImage = new Bitmap(Bin.X, Bin.Y);
+
+
 
             for (int i = 0; i < Bin.X; ++i)
                 for (int j = 0; j < Bin.Y; ++j)
                 {
                     int pixelNumber = i + j * Bin.X + layerNumber * Bin.X * Bin.Y;
                     textureImage.SetPixel(i, j, TransferFunction2(Bin.array[pixelNumber], min, width));
-
                 }
+
+            Bitmap resImg = new Bitmap(textureImage.Width, textureImage.Height);
+            for (int i = 0; i < textureImage.Width; i++)
+                for (int j = 0; j < textureImage.Height; j++)
+                {
+                    resImg.SetPixel(i, j, CalculateNewPixelColor(textureImage, i, j));
+                }
+
+            textureImage = resImg;
+
+        }
+
+        public static void generateTextureImage2(int layerNumber, int min, int width)
+        {
+            textureImage = new Bitmap(Bin.X, Bin.Y);
+
+
+
+            for (int i = 0; i < Bin.X; ++i)
+                for (int j = 0; j < Bin.Y; ++j)
+                {
+                    int pixelNumber = i + j * Bin.X + layerNumber * Bin.X * Bin.Y;
+                    textureImage.SetPixel(i, j, TransferFunction2(Bin.array[pixelNumber], min, width));
+                }
+
+      
+
         }
 
 

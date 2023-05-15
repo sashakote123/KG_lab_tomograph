@@ -93,17 +93,35 @@ namespace Tomograph
             
             if (radioButton1.Checked)
             {
-                if (loaded)
+                if (checkBox1.Checked)
                 {
-                    if (needReload)
+                    if (loaded)
                     {
-                        Viev.generateTextureImage(currentLayer, min, width);
-                        Viev.Load2DTexture();
-                        needReload = false;
+                        if (needReload)
+                        {
+                            Viev.generateTextureImage(currentLayer, min, width);
+                            Viev.Load2DTexture();
+                            needReload = false;
+                        }
+                        Viev.DrawTexture();
+                        glControl1.SwapBuffers();
                     }
-                    Viev.DrawTexture();
-                    glControl1.SwapBuffers();
                 }
+                else
+                {
+                    if (loaded)
+                    {
+                        if (needReload)
+                        {
+                            Viev.generateTextureImage2(currentLayer, min, width);
+                            Viev.Load2DTexture();
+                            needReload = false;
+                        }
+                        Viev.DrawTexture();
+                        glControl1.SwapBuffers();
+                    }
+                }
+                
             }
 
             if (radioButton2.Checked)
